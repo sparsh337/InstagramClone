@@ -18,16 +18,14 @@ var app = express();
 const mongoose = require("mongoose");
 
 // Connect to MongoDB
-app.use(expressSession({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: true,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URL,
-    collectionName: 'sessions'
-  }),
-  cookie: { secure: false } // Set to true if using HTTPS
-}));
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ MongoDB Connected Successfully!"))
+.catch(err => console.error("❌ MongoDB Connection Error:", err));
 
 
 // view engine setup
