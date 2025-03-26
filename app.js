@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -9,6 +9,7 @@ var expressSession = require("express-session");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const passport = require("passport");
+const MongoStore = require('connect-mongo');
 
 var app = express();
 
@@ -17,13 +18,17 @@ var app = express();
 const mongoose = require("mongoose");
 
 // Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.error("MongoDB Connection Error:", err));
+app.use(expressSession({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URL,
+    collectionName: 'sessions'
+  }),
+  cookie: { secure: false } // Set to true if using HTTPS
+}));
+
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
