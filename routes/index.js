@@ -8,6 +8,8 @@ const storyModel = require("./story");
 passport.use(new localStrategy(userModel.authenticate()));
 const upload = require("./multer");
 const utils = require("../utils/utils");
+const cloudinary = require('cloudinary').v2;
+
 
 
 // GET
