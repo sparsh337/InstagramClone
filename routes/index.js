@@ -187,17 +187,45 @@ router.post(
   }
 );
 
+// router.post(
+//   "/upload",
+//   isLoggedIn,
+//   upload.single("image"),
+//   async function (req, res) {
+//     const user = await userModel.findOne({
+//       username: req.session.passport.user,
+//     });
+//     user.picture = req.file.filename;
+//     await user.save();
+//     res.redirect("/edit");
+//   }
+// );
+
 router.post(
   "/upload",
   isLoggedIn,
   upload.single("image"),
   async function (req, res) {
-    const user = await userModel.findOne({
-      username: req.session.passport.user,
-    });
-    user.picture = req.file.filename;
-    await user.save();
-    res.redirect("/edit");
+    // Upload image to Cloudinary
+    try {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      
+      // Get the Cloudinary URL from the upload response
+      const imageUrl = result.secure_url;
+
+      // Find the user and update the picture field with the Cloudinary URL
+      const user = await userModel.findOne({
+        username: req.session.passport.user,
+      });
+      user.picture = imageUrl; // Save full URL from Cloudinary
+      await user.save();
+
+      // Redirect to the edit page or wherever you want to go
+      res.redirect("/edit");
+    } catch (error) {
+      console.error("Error uploading image to Cloudinary:", error);
+      res.status(500).send("Error uploading image");
+    }
   }
 );
 
